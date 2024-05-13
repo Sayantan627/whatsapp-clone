@@ -87,6 +87,52 @@ export const getMessages = query({
   },
 });
 
+export const sendImage = mutation({
+  args: {
+    imgId: v.id("_storage"),
+    sender: v.id("users"),
+    conversation: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const content = (await ctx.storage.getUrl(args.imgId)) as string;
+
+    await ctx.db.insert("messages", {
+      content: content,
+      sender: args.sender,
+      messageType: "image",
+      conversation: args.conversation,
+    });
+  },
+});
+
+export const sendVideo = mutation({
+  args: {
+    videoId: v.id("_storage"),
+    sender: v.id("users"),
+    conversation: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const content = (await ctx.storage.getUrl(args.videoId)) as string;
+
+    await ctx.db.insert("messages", {
+      content: content,
+      sender: args.sender,
+      messageType: "video",
+      conversation: args.conversation,
+    });
+  },
+});
+
 // Not optimum because if we have 200 messages of John then it will fetch the sender 200 times
 // export const getMessages = query({
 //   args: { conversation: v.id("conversations") },
