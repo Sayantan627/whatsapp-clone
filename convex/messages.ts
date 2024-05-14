@@ -38,8 +38,6 @@ export const sendTextMessage = mutation({
       conversation: args.conversation,
       messageType: "text",
     });
-
-    // TODO: add @gpt chat later
   },
 });
 
